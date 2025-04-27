@@ -6,12 +6,17 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:28 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/04/26 13:15:34 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/04/27 14:56:19 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
+
+# define MAX_WIDTH 1024
+# define B_HEX_UP "0123456789ABCDEF"
+# define B_HEX_LOW "0123456789abcdef"
+# define B_DEC "0123456789"
 
 // Includes	and Structs ------------------------------------------------------
 # include <stdlib.h>
@@ -21,12 +26,13 @@
 # include <stdio.h>		// New
 # include <limits.h>	// New
 # include <math.h>		// New
+# include <stdarg.h>
 
 typedef struct s_flags
 {
-	uint8_t	padding; 	// 0: nothing, 1: zero padding,  >1: left justify
-	uint8_t	sign_pad; 	// 0: nothing, 1: leading space, >1: force sign
-	uint8_t	alternate;
+	uint8_t	pad; 		// 0: nothing, >0 padding character
+	uint8_t	sign; 		// 0: nothing, >0 sign character
+	uint8_t	prefix;		// 0: nothing, >0 prefix character
 	size_t	width;
 	size_t	precision;
 	uint8_t	type;
@@ -37,6 +43,7 @@ char	*ft_strchr(const char *str, unsigned char c);
 void	*ft_memset(void *dst_void, uint8_t byte, size_t n);
 char	*ft_strfind(const char *str, const char *charset, uint8_t byte);
 int64_t	ft_atoi(const char *num_str);
+void	ft_putnbr64(const int64_t number, const char *base, int fd, size_t len);
 // Parsing rule:
 // Find format specifier: (strnpbrk) "cspdiux%"
 // Read until either type or null is found, or until invalid

@@ -2,7 +2,7 @@
 
 # Turn in files Makefile: `*.h, */*.h, *.c, */*.c`
 # External functs: `malloc, free, write, va_start, va_arg, va_copy, va_end`
-
+# Prototype: int	ft_printf(const char *, ...);
 # Mandatory
 • Do not implement the original printf()’s buffer management
 • Your implementation will be evaluated against the behavior of the original printf()

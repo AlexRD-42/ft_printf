@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:24:42 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/04/26 15:30:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/04/27 14:00:57 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,20 +46,21 @@ void	ft_putnbr(int64_t n, int fd)
 	write(fd, ptr, array + 20 - ptr);
 }
 
-void	ft_itoa_base(const int64_t number, int fd, const char *base)
+// Could make the array 64 by manually null terminating
+// Would be two system calls, shit fuck
+void	ft_putnbr64(const int64_t number, const char *base, int fd, size_t len)
 {
-	const int64_t	sign = (number >> 63);
-	char			array[66];
-	char			*ptr;
-	int64_t			radix;
-	uint64_t		abs_num;
+	char		array[66];
+	char		*ptr;
+	uint64_t	radix;
+	uint64_t	abs_num;
 
 	radix = 0;
 	while (base[radix] != 0)
 		radix++;
 	if (radix < 2)
 		return (NULL);
-	abs_num = (uint64_t) ((number ^ sign) - sign);
+	abs_num = (uint64_t)((number ^ (number >> 63)) - (number >> 63));
 	ptr = array + 65;
 	*ptr = 0;
 	*(--ptr) = base[(abs_num % radix)];
@@ -69,7 +70,9 @@ void	ft_itoa_base(const int64_t number, int fd, const char *base)
 		*(--ptr) = base[(abs_num % radix)];
 		abs_num /= radix;
 	}
-	if (sign != 0)
+	if (number < 0)
 		*(--ptr) = '-';
-	write(fd, ptr, array + 20 - ptr);
+	if (len > (array + 65 - ptr) || len == 0)
+		len = (array + 65 - ptr);
+	write(fd, ptr, len);
 }

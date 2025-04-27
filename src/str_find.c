@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:31:56 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/04/26 09:53:47 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/04/26 15:51:40 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,23 @@ char	*ft_strrchr(const char *str, unsigned char c)
 // When ref == zero, finds first valid char
 // When ref != zero, finds first invalid char
 char *ft_strfind(const char *str, const char *charset, uint8_t ref)
+{
+	unsigned char	lookup_table[256];
+
+	ft_memset(lookup_table, ref, 256);
+	while (*charset != 0)
+	{
+		lookup_table[(unsigned char) *charset] = !ref;
+		charset++;
+	}
+	while (lookup_table[(unsigned char) *str] == ref)
+		str++;
+	if (*str != 0)
+		return ((char *) str);
+	return (NULL);
+}
+
+char *ft_strrfind(const char *str, const char *charset, uint8_t ref)
 {
 	unsigned char	lookup_table[256];
 
