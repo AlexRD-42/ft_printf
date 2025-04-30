@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:04 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/04/30 16:23:54 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:29:36 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,6 @@ int main()
 	int num = 42;
 	char *str = "pipoca";
 
-	ft_printf("(%p)", LONG_MIN);
-	printf(", (%p)", LONG_MIN);
+	// ft_printf("(%p)", 'a');
+	printf(", (%5.5c)", 'a');
 }

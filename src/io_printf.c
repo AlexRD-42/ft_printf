@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 14:55:12 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/04/30 16:22:36 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:47:47 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,13 +52,13 @@ int	ft_print_numeric(uint64_t number, t_flags flags)
 	if (flags.type == 'd' || flags.type == 'i')
 		ptr = ft_itoa((int64_t)number, B_DEC, ptr, flags.precision);
 	else if (flags.type == 'u')
-		ptr = ft_itoa(number, B_DEC, ptr, flags.precision);
+		ptr = ft_utoa(number, B_DEC, ptr, flags.precision);
 	else if (flags.type == 'x')
-		ptr = ft_itoa(number, B_HEX_LOW, ptr, flags.precision);
+		ptr = ft_utoa(number, B_HEX_LOW, ptr, flags.precision);
 	else if (flags.type == 'X')
-		ptr = ft_itoa(number, B_HEX_UP, ptr, flags.precision);
+		ptr = ft_utoa(number, B_HEX_UP, ptr, flags.precision);
 	else if (flags.type == 'p')
-		ptr = ft_itoa(number, B_HEX_LOW, ptr, 0);
+		ptr = ft_utoa(number, B_HEX_LOW, ptr, 0);
 	if (flags.sign != 0 && *ptr != '-')
 		*(--ptr) = flags.sign;
 	if (flags.prefix != 0)

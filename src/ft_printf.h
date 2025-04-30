@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:28 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/04/30 16:23:45 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:42:41 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,10 @@ int	ft_print_numeric(uint64_t number, t_flags flags);
 int	ft_print_str(char *str, t_flags flags);
 int	ft_printf(const char *str, ...);
 
-int64_t	ft_atoi(const char *num_str);
+char	*ft_utoa(uint64_t number, const char *base, char *ptr, ssize_t len);
 char	*ft_itoa(const int64_t number, const char *base, char *ptr, ssize_t len);
+
+int64_t	ft_atoi(const char *num_str);
 void	*ft_memset(void *dst_void, uint8_t byte, size_t n);
 char	*ft_strfind(const char *str, const char *charset, unsigned char ref);
 char	*ft_strchr(const char *str, unsigned char c);

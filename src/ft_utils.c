@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 12:26:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/04/30 16:32:23 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:01:20 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,28 +33,51 @@ int64_t	ft_atoi(const char *num_str)
 	return (sign * number);
 }
 
-char	*ft_itoa(const int64_t number, const char *base, char *ptr, ssize_t len)
+// Maybe remove the bit hack
+char	*ft_itoa(int64_t number, const char *base, char *ptr, ssize_t len)
 {
-	uint64_t		radix;
-	uint64_t		abs_num;
+	int64_t			radix;
+	const int64_t	sign = (number > 0) - (number < 0);
 
 	radix = 0;
 	while (base[radix] != 0)
 		radix++;
-	abs_num = (uint64_t)((number ^ (number >> 63)) - (number >> 63));
 	*ptr = 0;
-	if (number == 0)
-		*(--ptr) = '0';
-	while (abs_num != 0)
+	*(--ptr) = base[sign * (number % radix)];
+	number = sign * (number / radix);
+	len--;
+	while (number != 0)
 	{
-		*(--ptr) = base[(abs_num % radix)];
-		abs_num /= radix;
+		*(--ptr) = base[(number % radix)];
+		number /= radix;
 		len--;
 	}
 	while (len-- > 0)
 		*(--ptr) = '0';
-	if (number < 0)
+	if (sign < 0)
 		*(--ptr) = '-';
+	return (ptr);
+}
+
+char	*ft_utoa(uint64_t number, const char *base, char *ptr, ssize_t len)
+{
+	uint64_t		radix;
+
+	radix = 0;
+	while (base[radix] != 0)
+		radix++;
+	*ptr = 0;
+	*(--ptr) = base[(number % radix)];
+	number /= radix;
+	len--;
+	while (number != 0)
+	{
+		*(--ptr) = base[(number % radix)];
+		number /= radix;
+		len--;
+	}
+	while (len-- > 0)
+		*(--ptr) = '0';
 	return (ptr);
 }
 
