@@ -6,33 +6,13 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 14:55:12 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/04/30 16:47:47 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/04/30 19:33:00 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-ssize_t	ft_dupwrite(const char c, ssize_t len)
-{
-	char			buffer[1024];
-	const ssize_t	olen = len;
 
-	if (len <= 0)
-		return (0);
-	ft_memset(buffer, c, sizeof(buffer));
-	while (len != 0)
-	{
-		if (len > 1024)
-			write(1, buffer, 1024);
-		else
-		{
-			write(1, buffer, len);
-			break;
-		}
-		len -= 1024;
-	}
-	return ((ssize_t) olen);
-}
 
 // Goes to the middle of the buffer array, then:
 // Backsteps through the array with the number string
@@ -87,8 +67,8 @@ int	ft_print_str(char *str, t_flags flags)
 	size_t	len;
 	ssize_t	pad_len;
 
-	if (str == NULL)
-		return (write(1, "(null)", 6));
+	// if (str == NULL)
+	// 	return (write(1, "(null)", 6));
 	len = 0;
 	while (str[len] != 0)
 		len++;
