@@ -1,16 +1,14 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   io_convert.c                                       :+:      :+:    :+:   */
+/*   old.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 15:50:30 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/04/28 11:10:35 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:28:52 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "ft_printf.h"
 
 // Performs bitwise manipulation to compute abs of n without overflowing
 // array[66] to hold all digits of a 64 bit signed integer with base 2
@@ -66,28 +64,6 @@
 // 	return (ft_strdup(ptr));
 // }
 
-// Check: Not necessary to do negative accumulation
-int64_t	ft_atoi(const char *num_str)
-{
-	int64_t	number;
-	int64_t	sign;
-
-	number = 0;
-	sign = -1;
-	while (*num_str == 32 || (*num_str >= 9 && *num_str <= 13))
-		num_str++;
-	if (*num_str == '-')
-	{
-		num_str++;
-		sign = -sign;
-	}
-	else if (*num_str == '+')
-		num_str++;
-	while (*num_str >= '0' && *num_str <= '9')
-		number = number * 10 - (*num_str++ - '0');
-	return (sign * number);
-}
-
 // int64_t	ft_atoi_base(const char *str, const char *base)
 // {
 // 	const char		*start = ft_strpbrk(str, base);
@@ -106,4 +82,33 @@ int64_t	ft_atoi(const char *num_str)
 // 	while (*start && lookup_table[(unsigned char) *start] < 255)
 // 		number = number * radix - lookup_table[(unsigned char) *start++];
 // 	return ((number ^ sign) - sign);
+// }
+
+// void	ft_putnbr64(const int64_t number, const char *base, int fd, size_t len)
+// {
+// 	char		array[66];
+// 	char		*ptr;
+// 	uint64_t	radix;
+// 	uint64_t	abs_num;
+
+// 	radix = 0;
+// 	while (base[radix] != 0)
+// 		radix++;
+// 	if (radix < 2)
+// 		return (NULL);
+// 	abs_num = (uint64_t)((number ^ (number >> 63)) - (number >> 63));
+// 	ptr = array + 65;
+// 	*ptr = 0;
+// 	*(--ptr) = base[(abs_num % radix)];
+// 	abs_num /= radix;
+// 	while (abs_num != 0)
+// 	{
+// 		*(--ptr) = base[(abs_num % radix)];
+// 		abs_num /= radix;
+// 	}
+// 	if (number < 0)
+// 		*(--ptr) = '-';
+// 	if (len > (array + 65 - ptr) || len == 0)
+// 		len = (array + 65 - ptr);
+// 	write(fd, ptr, len);
 // }
