@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 12:26:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/04/30 19:26:59 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/01 15:01:44 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,10 @@ void	*ft_memset(void *dst_void, uint8_t byte, size_t n)
 
 // When ref == zero, finds first invalid char
 // When ref != zero, finds first valid char
+// Wouldnt this be more useful if it returned 0 assuming it didnt match
 char	*ft_strfind(const char *str, const char *charset, unsigned char ref)
 {
-	unsigned char	lookup_table[256];
+	unsigned char	lookup_table[256] = "ZB";
 
 	ft_memset(lookup_table, ref, 256);
 	while (*charset != 0)
