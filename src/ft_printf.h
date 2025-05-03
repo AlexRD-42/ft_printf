@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:28 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/02 14:35:55 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/02 17:52:25 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@
 # define B_HEX_UP "0123456789ABCDEF"
 # define B_HEX_LOW "0123456789abcdef"
 # define B_DEC "0123456789"
-
-# define Z32 {0}
 
 // Includes	and Structs ------------------------------------------------------
 # include <stdlib.h>
@@ -41,7 +39,7 @@ typedef struct s_flags
 }	t_flags;
 
 int	ft_printf(const char *str, ...);
-int	ft_parse_params(const char *str, const char *end, va_list args);
+int	ft_parse_params(const char *str, char *ptr, va_list args);
 int	ft_dupwrite(const char c, ssize_t len);
 int	ft_print(char *str, size_t len, t_flags flags);
 

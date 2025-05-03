@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 12:26:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/01 15:01:44 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/03 09:41:54 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,4 +92,22 @@ void	*ft_memcpy(void *dst_void, const void *src_void, size_t n)
 		n--;
 	}
 	return (dst_void);
+}
+
+// This can return ssize_t and could reduce the buffer size
+// Is it better to do 2x64 bit operations or 1x128 bit operation
+int	ft_dupwrite(const char c, size_t len)
+{
+	int		bytes;
+	char	buffer[256];
+
+	bytes = 0;
+	ft_memset(buffer, c, sizeof(buffer));
+	while (len > 256)
+	{
+		bytes += write(1, buffer, 256);
+		len -= 256;
+	}
+	bytes += write(1, buffer, len);
+	return (bytes);
 }
