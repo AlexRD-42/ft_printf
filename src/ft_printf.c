@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:04 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/03 16:29:16 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/03 17:46:48 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,8 @@ static char	*ft_getstr(char *buffer, t_flags flags, va_list args)
 	return (ft_getnum(buffer + MAX_WIDTH - 1, number, flags));
 }
 
-int	ft_parse(const char *str, char *ptr, va_list args, const char **rstr)
+static int
+	ft_parse(const char *str, char *ptr, va_list args, const char **addr)
 {
 	t_flags		flags;
 	size_t		ltable[256];
@@ -103,7 +104,7 @@ int	ft_parse(const char *str, char *ptr, va_list args, const char **rstr)
 	ft_memset(ptr, 0, MAX_WIDTH);
 	while (str < end)
 		ltable[(uint8_t)(*str++)] += 1;
-	*rstr = end + 1;
+	*addr = end + 1;
 	if (ltable['.'] > 1 || ft_strchr("cspdiuxX%", (uint8_t) * end) == NULL)
 		return (write(1, ostr, end - ostr + 1));
 	flags = ft_setflags(ostr + 1, *end, ltable);

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:28 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/03 16:30:35 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/03 17:47:07 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 # define FT_PRINTF_H
 
 # ifndef MAX_WIDTH
-#  define MAX_WIDTH 1024
+#  define MAX_WIDTH 4096
 # endif
+
 # define B_HEX_UP "0123456789ABCDEF"
 # define B_HEX_LOW "0123456789abcdef"
 # define B_DEC "0123456789"
@@ -40,12 +41,13 @@ typedef struct s_flags
 }	t_flags;
 
 int		ft_printf(const char *str, ...);
-int		ft_parse(const char *str, char *ptr, va_list args, const char **rs);
+// utils_io
 int		ft_dupwrite(const char c, size_t len);
-int		ft_print(char *str, size_t len, t_flags flags);
 char	*ft_utoa(uint64_t number, const char *base, char *ptr, ssize_t len);
 char	*ft_itoa(const int64_t nbr, const char *base, char *ptr, ssize_t len);
 int64_t	ft_atoi(const char *num_str);
+int		ft_print(char *str, size_t len, t_flags flags);
+// utils_core
 size_t	ft_strlen(const char *str);
 void	*ft_memset(void *dst_void, uint8_t byte, size_t n);
 char	*ft_strfind(const char *str, const char *charset, unsigned char ref);
