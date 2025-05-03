@@ -1,18 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   io_utils.c                                         :+:      :+:    :+:   */
+/*   utils_core.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/30 12:26:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/03 09:41:54 by adeimlin         ###   ########.fr       */
+/*   Created: 2025/05/03 16:19:17 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/05/03 16:24:22 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.h"
+#include <stdint.h>
+#include <stddef.h>
 
-// Memset is int because of word copying
+size_t	ft_strlen(const char *str)
+{
+	const char	*ostr;
+
+	if (str == NULL)
+		return (0);
+	ostr = str;
+	while (*str != 0)
+		str++;
+	return (str - ostr);
+}
+
 void	*ft_memset(void *dst_void, uint8_t byte, size_t n)
 {
 	unsigned char	*dst;
@@ -27,12 +39,26 @@ void	*ft_memset(void *dst_void, uint8_t byte, size_t n)
 	return (dst_void);
 }
 
-// When ref == zero, finds first invalid char
-// When ref != zero, finds first valid char
-// Wouldnt this be more useful if it returned 0 assuming it didnt match
+void	*ft_memcpy(void *dst_void, const void *src_void, size_t n)
+{
+	char		*dst;
+	const char	*src;
+
+	dst = (char *) dst_void;
+	src = (const char *) src_void;
+	if (dst == src)
+		return (dst_void);
+	while (n > 0)
+	{
+		*dst++ = *src++;
+		n--;
+	}
+	return (dst_void);
+}
+
 char	*ft_strfind(const char *str, const char *charset, unsigned char ref)
 {
-	unsigned char	lookup_table[256] = "ZB";
+	unsigned char	lookup_table[256];
 
 	ft_memset(lookup_table, ref, 256);
 	while (*charset != 0)
@@ -63,51 +89,4 @@ char	*ft_strchr(const char *str, unsigned char c)
 		str++;
 	}
 	return (NULL);
-}
-
-size_t	ft_strlen(const char *str)
-{
-	const char	*ostr;
-
-	if (str == NULL)
-		return (0);
-	ostr = str;
-	while (*str != 0)
-		str++;
-	return (str - ostr);
-}
-
-void	*ft_memcpy(void *dst_void, const void *src_void, size_t n)
-{
-	char		*dst;
-	const char	*src;
-
-	dst = (char *) dst_void;
-	src = (const char *) src_void;
-	if (dst == src)
-		return (dst_void);
-	while (n > 0)
-	{
-		*dst++ = *src++;
-		n--;
-	}
-	return (dst_void);
-}
-
-// This can return ssize_t and could reduce the buffer size
-// Is it better to do 2x64 bit operations or 1x128 bit operation
-int	ft_dupwrite(const char c, size_t len)
-{
-	int		bytes;
-	char	buffer[256];
-
-	bytes = 0;
-	ft_memset(buffer, c, sizeof(buffer));
-	while (len > 256)
-	{
-		bytes += write(1, buffer, 256);
-		len -= 256;
-	}
-	bytes += write(1, buffer, len);
-	return (bytes);
 }

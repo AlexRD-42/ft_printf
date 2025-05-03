@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra -Werror
 AR = ar rcs
 RM = rm -f
 
-SRCS = io_utils.c io_convert.c io_parse.c ft_printf.c
+SRCS = utils_io.c utils_core.c ft_printf.c
 
 # BONUS_SRCS = ft_utils.c io_printf.c ft_printf.c
 

@@ -1,16 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   io_convert.c                                       :+:      :+:    :+:   */
+/*   utils_io.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/30 19:26:35 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/03 09:12:56 by adeimlin         ###   ########.fr       */
+/*   Created: 2025/04/30 12:26:18 by adeimlin          #+#    #+#             */
+/*   Updated: 2025/05/03 16:30:19 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdint.h>
+#include <stddef.h>
 #include "ft_printf.h"
+// This can return ssize_t and could reduce the buffer size
+// Is it better to do 2x64 bit operations or 1x128 bit operation
+int	ft_dupwrite(const char c, size_t len)
+{
+	int		bytes;
+	char	buffer[256];
+
+	bytes = 0;
+	ft_memset(buffer, c, sizeof(buffer));
+	while (len >= 256)
+	{
+		bytes += write(1, buffer, 256);
+		len -= 256;
+	}
+	bytes += write(1, buffer, len);
+	return (bytes);
+}
 
 int64_t	ft_atoi(const char *num_str)
 {
@@ -82,37 +101,28 @@ char	*ft_utoa(uint64_t number, const char *base, char *ptr, ssize_t len)
 	return (ptr);
 }
 
-// 0 for idec, 1 for udec, 2 for hex, 3 for HEX
-# define B_HEX_UP "0123456789ABCDEF"
-# define B_HEX_LOW "0123456789abcdef"
-# define B_DEC "0123456789"
-
-// different sizes
-static const char	*base[4] = {"0123456789", "0123456789", "0123456789abcdef", "0123456789ABCDEF"};
-
-// would be better to have a function that always uses utoa, 
-// gets the absolute value for the integer, and negates before returning
-char	*ft_ltoa(int64_t number, uint8_t type, char *ptr, ssize_t len)
+int	ft_print(char *str, size_t len, t_flags flags)
 {
-	int64_t			radix;
-	const int64_t	sign = (number > 0) - (number < 0);
+	int		bytes;
+	size_t	pad_len;
 
-	radix = 0;
-	while (base[radix] != 0)
-		radix++;
-	*ptr = 0;
-	*(--ptr) = base[sign * (number % radix)];
-	number = sign * (number / radix);
-	len--;
-	while (number != 0)
+	bytes = 0;
+	pad_len = 0;
+	if (flags.dot != 0 && len > flags.precision && !flags.numeric)
+		len = flags.precision;
+	if (len < flags.width)
+		pad_len = flags.width - len;
+	if (flags.pad == '0' && (*str == 32 || *str == 45 || *str == 43) && len--)
+		bytes += write(1, str++, 1);
+	if (flags.pad == '-')
 	{
-		*(--ptr) = base[(number % radix)];
-		number /= radix;
-		len--;
+		bytes += write(1, str, len);
+		bytes += ft_dupwrite(' ', pad_len);
 	}
-	while (len-- > 0)
-		*(--ptr) = '0';
-	if (sign < 0)
-		*(--ptr) = '-';
-	return (ptr);
+	else
+	{
+		bytes += ft_dupwrite(flags.pad, pad_len);
+		bytes += write(1, str, len);
+	}
+	return (bytes);
 }
