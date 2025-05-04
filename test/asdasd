@@ -1,0 +1,65 @@
+// static char	*ft_getstr(char *buffer, t_flags flags, va_list args)
+// {
+	uint64_t	number;
+	char		*str;
+
+	number = 0;
+	*(buffer) = '%';
+	if (flags.type == 's')
+	{
+		str = (char *) va_arg(args, char *);
+		if (str == NULL)
+			return (ft_memcpy(buffer, "(null)", 7));
+	}
+	else if (flags.type == 'c')
+		*buffer = (char)va_arg(args, int);
+	else if (flags.type == 'p')
+		number = (uintptr_t) va_arg(args, void *);
+	else if (flags.numeric > 0)
+		number = va_arg(args, unsigned int);
+	if (flags.type == 'p' && number == 0)
+		return (ft_memcpy(buffer, "(nil)", 6));
+	if (flags.type == 's')
+		return (str);
+	if (flags.type == '%' || flags.type == 'c')
+		return (buffer);
+	return (ft_getnum(buffer + MAX_WIDTH - 1, number, flags));
+// }
+
+static char	*ft_getstr(char *str, uint64_t number, char *buffer, t_flags flags)
+{
+	static const char	*base[3] = {B_DEC, B_HEX_LOW, B_HEX_UP};
+
+	if (str == NULL && flags.type == 's')
+		return (ft_memcpy(buffer, "(null)", 7));
+	if (flags.type == 'p' && number == 0)
+		return (ft_memcpy(buffer, "(nil)", 6));
+	if (flags.type == 'c' || flags.type == '%')
+		*buffer = 
+	if ((flags.type == 'd' || flags.type == 'i') && (int32_t) number < 0)
+	{
+		flags.sign = '-';
+		number = (uint32_t)(-(int64_t)number);
+	}
+	buffer = ft_utoa(number, base[flags.base_index], buffer + MAX_WIDTH - 1, flags.precision);
+	if (flags.sign != 0)
+		*(--buffer) = flags.sign;
+	if (flags.prefix != 0 && number != 0)
+	{
+		*(--buffer) = flags.prefix;
+		*(--buffer) = '0';
+	}
+	return (buffer);
+}
+
+// if (flags.type == 's')
+// ptr = ft_getstr(va_arg(args, char *), 0, buffer, flags);
+// else if (flags.type == 'c')
+// ptr = ft_getstr(NULL, (char) va_arg(args, int), buffer, flags);
+// else if (flags.type == '%')
+// ptr = ft_getstr(NULL, '%', buffer, flags);
+// else if (flags.type == 'p')
+// ptr = ft_getstr(NULL, va_arg(args, void *), buffer, flags);
+// else
+// ptr = ft_getstr(NULL, va_arg(args, unsigned int), buffer, flags);
+// if (flags.type == 'c' || flags.type == '%')

@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:04 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/04 11:39:20 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/04 13:06:39 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,14 @@ static char	*ft_getnum(char *ptr, uint64_t number, t_flags flags)
 {
 	static const char	*base[3] = {B_DEC, B_HEX_LOW, B_HEX_UP};
 
+	if (flags.type == 'p' && number == 0)
+		return (ft_memcpy(ptr, "(nil)", 6));
 	if ((flags.type == 'd' || flags.type == 'i') && (int32_t) number < 0)
 	{
 		flags.sign = '-';
 		number = (uint32_t)(-(int64_t)number);
 	}
-	ptr = ft_utoa(number, base[flags.base_index], ptr, flags.precision);
+	ptr = ft_utoa(number, base[flags.base_index], ptr + MAX_WIDTH - 1, flags.precision);
 	if (flags.sign != 0)
 		*(--ptr) = flags.sign;
 	if (flags.prefix != 0 && number != 0)
@@ -65,61 +67,68 @@ static char	*ft_getnum(char *ptr, uint64_t number, t_flags flags)
 	return (ptr);
 }
 
-static char	*ft_getstr(char *buffer, t_flags flags, va_list args)
+static int	ft_parse(const char *str, const char *end, va_list args)
 {
-	uint64_t	number;
-	char		*str;
+	char		buffer[MAX_WIDTH];
+	char		*ptr;
+	t_flags		flags;
 
-	number = 0;
-	*(buffer) = '%';
+	flags = ft_setflags(str, *end, end);
+	if (flags.dot > 1 || ft_strchr("cspdiuxX%", *(uint8_t *)end) == NULL)
+		return (write(1, str, end - str));
+	ft_memset(buffer, 0, sizeof(buffer));
+	ptr = buffer;
 	if (flags.type == 's')
 	{
-		str = (char *) va_arg(args, char *);
-		if (str == NULL)
-			return (ft_memcpy(buffer, "(null)", 7));
+		ptr = (char *) va_arg(args, char *);
+		if (ptr == NULL)
+			ptr = ft_memcpy(buffer, "(null)", 7);
 	}
 	else if (flags.type == 'c')
-		*buffer = (char)va_arg(args, int);
+		*ptr = (char) va_arg(args, int);
+	else if (flags.type == '%')
+		*ptr = '%';
 	else if (flags.type == 'p')
-		number = (uintptr_t) va_arg(args, void *);
-	else if (flags.numeric > 0)
-		number = va_arg(args, unsigned int);
-	if (flags.type == 'p' && number == 0)
-		return (ft_memcpy(buffer, "(nil)", 6));
-	if (flags.type == 's')
-		return (str);
-	if (flags.type == '%' || flags.type == 'c')
-		return (buffer);
-	return (ft_getnum(buffer + MAX_WIDTH - 1, number, flags));
-}
-
-static int	ft_parse(const char *str, char *ptr, va_list args, const char **addr)
-{
-	t_flags		flags;
-	const char	*ostr = str - 1;
-	const char	*end = ft_strfind(str + 1, "-+#. 0123456789", 0);
-
-	ft_memset(ptr, 0, MAX_WIDTH);
-	*addr = end + 1;
-	flags = ft_setflags(ostr + 1, *end, end);
-	if (flags.dot > 1 || ft_strchr("cspdiuxX%", (uint8_t) * end) == NULL)
-		return (write(1, ostr, end - ostr + 1));
-	ptr = ft_getstr(ptr, flags, args);
+		ptr = ft_getnum(buffer, (uintptr_t) va_arg(args, void *), flags);
+	else
+		ptr = ft_getnum(buffer, va_arg(args, unsigned int), flags);
 	if (flags.type == 'c' || flags.type == '%')
 		return (ft_print(ptr, 1, flags));
 	else
 		return (ft_print(ptr, ft_strlen(ptr), flags));
 }
 
-// Could make LUT in this (could also make it on setflags)
-// But then you run into the problem of not knowing how to return a failure
-// Also the setflags function is already 19 lines
+static int	ft_writef(char *str, size_t len, t_flags flags)
+{
+	int		bytes;
+	size_t	pad_len;
+
+	bytes = 0;
+	pad_len = 0;
+	if (flags.dot != 0 && len > flags.precision && !flags.numeric)
+		len = flags.precision;
+	if (len < flags.width)
+		pad_len = flags.width - len;
+	if (flags.pad == '0' && (*str == 32 || *str == 45 || *str == 43) && len--)
+		bytes += write(1, str++, 1);
+	if (flags.pad == '-')
+	{
+		bytes += write(1, str, len);
+		bytes += ft_putnchar(' ', pad_len);
+	}
+	else
+	{
+		bytes += ft_putnchar(flags.pad, pad_len);
+		bytes += write(1, str, len);
+	}
+	return (bytes);
+}
+
 int	ft_printf(const char *str, ...)
 {
 	int			bytes;
 	va_list		args;
 	const char	*ostr;
-	char		buffer[MAX_WIDTH];
 
 	bytes = 0;
 	va_start(args, str);
@@ -130,7 +139,11 @@ int	ft_printf(const char *str, ...)
 			str++;
 		bytes += write (1, ostr, str - ostr);
 		if (*str == '%')
-			bytes += ft_parse(str, buffer, args, &str);
+		{
+			ostr = str;
+			str = ft_strfind(str + 1, "-+#. 0123456789", 0);
+			bytes += ft_parse(ostr, str++, args);
+		}
 	}
 	va_end(args);
 	return (bytes);
@@ -138,9 +151,8 @@ int	ft_printf(const char *str, ...)
 
 // #include <limits.h>
 // #include <stdio.h>
-// // #define test  ("%09d %010d %011d %012d %013d %014d %015d", INT_MAX, INT_MIN, LONG_MAX, LONG_MIN, ULONG_MAX, 0, -42)
 
-// #define test ("%d", INT_MIN)
+// #define test ("%5..5d", INT_MIN, 42)
 // int main()
 // {
 // 	ft_printf test;

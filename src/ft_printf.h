@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:28 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/04 10:45:10 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/04 13:06:01 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,7 @@ int		ft_printf(const char *str, ...);
 // utils_io
 ssize_t	ft_putnchar(const char c, size_t length);
 char	*ft_utoa(uint64_t number, const char *base, char *ptr, ssize_t len);
-char	*ft_itoa(const int64_t nbr, const char *base, char *ptr, ssize_t len);
 int64_t	ft_atoi(const char *num_str);
-int		ft_print(char *str, size_t len, t_flags flags);
 // utils_core
 size_t	ft_strlen(const char *str);
 void	*ft_memset(void *dst_void, uint8_t byte, size_t n);
