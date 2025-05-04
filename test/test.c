@@ -2,30 +2,24 @@
 #include <stdint.h>
 #include <stdio.h>
 
-int64_t	ft_atoi(const char *num_str)
+ssize_t	ft_putnchar(const char c, size_t length)
 {
-	int64_t	number;
-	int64_t	sign;
+	ssize_t			bytes;
+	const int64_t	word = 0x0101010101010101 * c;
+	const int64_t	cache[8] = {word, word, word, word, word, word, word, word};
 
-	if (num_str == NULL)
-		return (0);
-	number = 0;
-	sign = -1;
-	while (*num_str == 32 || (*num_str >= 9 && *num_str <= 13))
-		num_str++;
-	if (*num_str == '-')
+	bytes = 0;
+	while (length >= 256)
 	{
-		num_str++;
-		sign = -sign;
+		bytes += write(1, cache, 256);
+		length -= 256;
 	}
-	else if (*num_str == '+')
-		num_str++;
-	while (*num_str >= '0' && *num_str <= '9')
-		number = number * 10 - (*num_str++ - '0');
-	return (sign * number);
+	bytes += write(1, cache, length);
+	return (bytes);
 }
 
 int	main(void)
 {
-	printf("(%10d)", -42);
+	int bytes = 0;
+	bytes = printf("(%10d)");
 }

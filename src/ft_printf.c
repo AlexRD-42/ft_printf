@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:04 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/03 17:46:48 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/04 11:39:20 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,24 @@
 // This could hold the STR or Number with va_args already!
 // If invalid, set to pointer and read the invalid byte as a number
 // fields: uint64_t number, char *str, size_t len
-// flags.numeric = (type == 'd' || type == 'i') + ((type == 'u') << 1)
-//  + ((type == 'x' || type == 'p') << 2) + ((type == 'X') << 3);
-static t_flags	ft_setflags(const char *str, const char type, size_t lut[256])
+
+static t_flags	ft_setflags(const char *str, const char type, const char *end)
 {
 	t_flags		flags;
 	const char	*digit = ft_strfind(str, "123456789", 1);
 	const char	*dot = ft_strchr(str, '.');
 	const char	zpad = !!ft_strchr(str, '0') && (ft_strchr(str, '0') < digit);
+	size_t		lut[256];
 
+	ft_memset(lut, 0, sizeof(lut));
+	while (str < end)
+		lut[(uint8_t)(*str++)] += 1;
 	flags.type = type;
 	flags.numeric = ft_strchr("pdiuxX", type) != NULL;
+	flags.base_index = (type == 'x' || type == 'p') + ((type == 'X') << 1);
 	flags.precision = 0;
 	flags.width = 0;
-	flags.dot = !!dot;
+	flags.dot = lut['.'];
 	flags.sign = ' ' * (lut[' '] && !lut['+']) + '+' * !!lut['+'];
 	flags.prefix = 'x' * ((lut['#'] && type == 'x') || type == 'p');
 	flags.prefix += 'X' * (lut['#'] && type == 'X');
@@ -41,20 +45,17 @@ static t_flags	ft_setflags(const char *str, const char type, size_t lut[256])
 	return (flags);
 }
 
-// To do: index this disaster with a lut for the bases
 static char	*ft_getnum(char *ptr, uint64_t number, t_flags flags)
 {
-	if (flags.type == 'd' || flags.type == 'i')
-		ptr = ft_itoa((int)number, B_DEC, ptr, flags.precision);
-	else if (flags.type == 'u')
-		ptr = ft_utoa(number, B_DEC, ptr, flags.precision);
-	else if (flags.type == 'x')
-		ptr = ft_utoa(number, B_HEX_LOW, ptr, flags.precision);
-	else if (flags.type == 'X')
-		ptr = ft_utoa(number, B_HEX_UP, ptr, flags.precision);
-	else if (flags.type == 'p')
-		ptr = ft_utoa(number, B_HEX_LOW, ptr, flags.precision);
-	if (flags.sign != 0 && *ptr != '-')
+	static const char	*base[3] = {B_DEC, B_HEX_LOW, B_HEX_UP};
+
+	if ((flags.type == 'd' || flags.type == 'i') && (int32_t) number < 0)
+	{
+		flags.sign = '-';
+		number = (uint32_t)(-(int64_t)number);
+	}
+	ptr = ft_utoa(number, base[flags.base_index], ptr, flags.precision);
+	if (flags.sign != 0)
 		*(--ptr) = flags.sign;
 	if (flags.prefix != 0 && number != 0)
 	{
@@ -92,22 +93,17 @@ static char	*ft_getstr(char *buffer, t_flags flags, va_list args)
 	return (ft_getnum(buffer + MAX_WIDTH - 1, number, flags));
 }
 
-static int
-	ft_parse(const char *str, char *ptr, va_list args, const char **addr)
+static int	ft_parse(const char *str, char *ptr, va_list args, const char **addr)
 {
 	t_flags		flags;
-	size_t		ltable[256];
 	const char	*ostr = str - 1;
 	const char	*end = ft_strfind(str + 1, "-+#. 0123456789", 0);
 
-	ft_memset(ltable, 0, sizeof(ltable));
 	ft_memset(ptr, 0, MAX_WIDTH);
-	while (str < end)
-		ltable[(uint8_t)(*str++)] += 1;
 	*addr = end + 1;
-	if (ltable['.'] > 1 || ft_strchr("cspdiuxX%", (uint8_t) * end) == NULL)
+	flags = ft_setflags(ostr + 1, *end, end);
+	if (flags.dot > 1 || ft_strchr("cspdiuxX%", (uint8_t) * end) == NULL)
 		return (write(1, ostr, end - ostr + 1));
-	flags = ft_setflags(ostr + 1, *end, ltable);
 	ptr = ft_getstr(ptr, flags, args);
 	if (flags.type == 'c' || flags.type == '%')
 		return (ft_print(ptr, 1, flags));
@@ -139,3 +135,15 @@ int	ft_printf(const char *str, ...)
 	va_end(args);
 	return (bytes);
 }
+
+// #include <limits.h>
+// #include <stdio.h>
+// // #define test  ("%09d %010d %011d %012d %013d %014d %015d", INT_MAX, INT_MIN, LONG_MAX, LONG_MIN, ULONG_MAX, 0, -42)
+
+// #define test ("%d", INT_MIN)
+// int main()
+// {
+// 	ft_printf test;
+// 	printf("\n");
+// 	printf test;
+// }

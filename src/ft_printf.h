@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:28 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/03 17:47:07 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/04 10:45:10 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct s_flags
 	uint8_t	sign;		// 0: nothing, >0 (+ or space)
 	uint8_t	prefix;		// 0: nothing, >0 (x or X)
 	size_t	width;
+	uint8_t	base_index;
 	size_t	precision;
 	uint8_t	dot;
 	uint8_t	type;
@@ -42,7 +43,7 @@ typedef struct s_flags
 
 int		ft_printf(const char *str, ...);
 // utils_io
-int		ft_dupwrite(const char c, size_t len);
+ssize_t	ft_putnchar(const char c, size_t length);
 char	*ft_utoa(uint64_t number, const char *base, char *ptr, ssize_t len);
 char	*ft_itoa(const int64_t nbr, const char *base, char *ptr, ssize_t len);
 int64_t	ft_atoi(const char *num_str);
