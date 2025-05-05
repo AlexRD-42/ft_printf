@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 12:26:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/04 13:04:49 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/05 12:48:56 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,15 @@ ssize_t	ft_putnchar(const char c, size_t length)
 	return (bytes);
 }
 
-int64_t	ft_atoi(const char *num_str)
+int64_t	ft_atoi_f(const char *num_str, const char *end)
 {
 	int64_t	number;
 	int64_t	sign;
 
-	if (num_str == NULL)
+	if (num_str == NULL || num_str == end)
 		return (0);
+	if (end == NULL)
+		end = (const char *) UINTPTR_MAX;
 	number = 0;
 	sign = -1;
 	while (*num_str == 32 || (*num_str >= 9 && *num_str <= 13))
@@ -48,30 +50,32 @@ int64_t	ft_atoi(const char *num_str)
 	}
 	else if (*num_str == '+')
 		num_str++;
-	while (*num_str >= '0' && *num_str <= '9')
+	while (num_str < end && *num_str >= '0' && *num_str <= '9')
 		number = number * 10 - (*num_str++ - '0');
 	return (sign * number);
 }
 
-// This could zero pad as well
-char	*ft_utoa(uint64_t number, const char *base, char *ptr, ssize_t len)
+char	*ft_itoa_f(uint64_t number, const char f, char *ptr, ssize_t length)
 {
-	uint64_t		radix;
+	static const char	tbase[2][17] = {"0123456789abcdef", "0123456789ABCDEF"};
+	const char			*base = tbase[(f == 'X')];
+	const uint_fast8_t	radix = 10 + 6 * (f == 'p' || f == 'X' || f == 'x');
+	const uint_fast8_t	sign = (f == 'd' || f == 'i') && (int32_t) number < 0;
 
-	radix = 0;
-	while (base[radix] != 0)
-		radix++;
+	if (sign != 0)
+		number = (uint32_t)(-(int64_t)number);
 	*ptr = 0;
-	*(--ptr) = base[(number % radix)];
-	number /= radix;
-	len--;
-	while (number != 0)
+	while (1)
 	{
 		*(--ptr) = base[(number % radix)];
 		number /= radix;
-		len--;
+		length--;
+		if (number == 0)
+			break ;
 	}
-	while (len-- > 0)
+	while (length-- > 0)
 		*(--ptr) = '0';
+	if (sign != 0)
+		*(--ptr) = '-';
 	return (ptr);
 }

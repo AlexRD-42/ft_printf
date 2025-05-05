@@ -81,3 +81,27 @@ char	*ft_itoa_base(uint64_t number, const char t, char *ptr, ssize_t len)
 		*(--ptr) = '0';
 	return (ptr);
 }
+
+// This could zero pad as well
+// Calculate pad length based on optr - ptr
+char	*ft_utoa(uint64_t number, const char *base, char *ptr, ssize_t len)
+{
+	uint64_t		radix;
+
+	radix = 0;
+	while (base[radix] != 0)
+		radix++;
+	*ptr = 0;
+	*(--ptr) = base[(number % radix)];
+	number /= radix;
+	len--;
+	while (number != 0)
+	{
+		*(--ptr) = base[(number % radix)];
+		number /= radix;
+		len--;
+	}
+	while (len-- > 0)
+		*(--ptr) = '0';
+	return (ptr);
+}
