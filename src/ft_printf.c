@@ -6,19 +6,19 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:04 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/05 12:47:38 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/05 17:22:15 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include <stdarg.h>
 
 static t_flags	ft_setflags(const char *str, const char type, const char *end)
 {
 	t_flags		flags;
 	const char	*digit = ft_strfind(str, "123456789", 1);
-	const char	*dot = ft_strchr(str, '.');
-	const char	zpad = !!ft_strchr(str, '0') && (ft_strchr(str, '0') < digit);
+	const char	*dot = ft_strchr_f(str, '.', end);
+	const char	zpad = !!ft_strchr_f(str, '0', end)
+		&& (ft_strchr_f(str, '0', end) < digit);
 	size_t		lut[256];
 
 	ft_memset(lut, 0, sizeof(lut));
@@ -37,7 +37,7 @@ static t_flags	ft_setflags(const char *str, const char type, const char *end)
 	if ((digit < dot) || (dot == NULL && digit != NULL))
 		flags.width = ft_atoi_f(digit, end);
 	flags.pad = ' ' + 13 * (!!lut['-']);
-	flags.pad += 16 * (!lut[45] && !lut[32] && zpad && flags.numeric && !dot);
+	flags.pad += 16 * (!lut[45] && zpad && flags.numeric && !dot);
 	return (flags);
 }
 
@@ -63,7 +63,7 @@ static char	*ft_getstr(char *ptr, uintptr_t number, t_flags flags)
 	return (ptr);
 }
 
-static int	ft_writef(char *str, size_t len, t_flags flags)
+static int	ft_write_f(char *str, size_t len, t_flags flags)
 {
 	int		bytes;
 	size_t	pad_len;
@@ -79,8 +79,8 @@ static int	ft_writef(char *str, size_t len, t_flags flags)
 	}
 	else
 	{
-		if (flags.pad == '0' && (flags.sign != 0 || *str == '-') && len--)
-			bytes += write(1, str++, 1);
+		if (*str != '(' && flags.pad == '0')
+			bytes += ft_putprefix(&str, flags, &len);
 		bytes += ft_putnchar(flags.pad, pad_len);
 		bytes += write(1, str, len);
 	}
@@ -89,31 +89,30 @@ static int	ft_writef(char *str, size_t len, t_flags flags)
 
 static int	ft_parse(const char *str, const char *end, va_list args)
 {
-	uintptr_t	va_var;
 	char		buffer[MAX_WIDTH];
 	char		*ptr;
 	t_flags		flags;
-	size_t		length;
+	size_t		len;
 
 	flags = ft_setflags(str, *end, end);
 	if (flags.dot > 1 || ft_strchr("cspdiuxX", *(uint8_t *)end) == NULL)
 		return (write(1, str, end - str));
 	ft_memset(buffer, 0, sizeof(buffer));
 	if (flags.type == 's' || flags.type == 'p')
-		va_var = (uintptr_t) va_arg(args, void *);
+		flags.va_var = (uintptr_t) va_arg(args, void *);
 	else
-		va_var = va_arg(args, unsigned int);
-	ptr = ft_getstr(buffer, va_var, flags);
-	length = 1;
+		flags.va_var = va_arg(args, unsigned int);
+	ptr = ft_getstr(buffer, flags.va_var, flags);
+	len = 1;
 	if (flags.type != 'c')
-		length = ft_strlen(ptr);
-	if (flags.type == 's' && flags.dot != 0 && flags.precision < length)
-		length = flags.precision;
-	if (flags.numeric && flags.dot != 0 && flags.precision < length && !va_var)
-		length = flags.precision;
-	if (flags.type == 's' && flags.dot != 0 && flags.precision < 6 && !va_var)
-		length = 0;
-	return (ft_writef(ptr, length, flags));
+		len = ft_strlen(ptr);
+	if (flags.type == 's' && flags.dot != 0 && flags.precision < len)
+		len = flags.precision;
+	if (flags.numeric && flags.dot && flags.precision < len && !flags.va_var)
+		len = flags.precision + (flags.sign != 0 || *str == '-');
+	if (flags.type == 's' && flags.dot && flags.precision < 6 && !flags.va_var)
+		len = 0;
+	return (ft_write_f(ptr, len, flags));
 }
 
 int	ft_printf(const char *str, ...)
@@ -129,7 +128,7 @@ int	ft_printf(const char *str, ...)
 		ostr = str;
 		while (*str != 0 && *str != '%')
 			str++;
-		bytes += write (1, ostr, str - ostr);
+		bytes += write(1, ostr, str - ostr);
 		if (*str == '%')
 		{
 			ostr = str;
@@ -148,12 +147,12 @@ int	ft_printf(const char *str, ...)
 // #include <limits.h>
 // #include <stdio.h>
 
-// // .0 precision makes it so 0 doesn't show but != 0 shows
-// // precision lower than 7 makes it so null doesn't show at all
-// #define test ("%.6s", NULL)
+// #define test (">------------<%+.38d>------------<", 0)
+// // #define test ("%#", 799523476)
 // int main()
 // {
 // 	ft_printf test;
 // 	printf("\n");
 // 	printf test;
+// 	printf("\n");
 // }
