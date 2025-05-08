@@ -6,12 +6,10 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 12:26:18 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/05 17:19:45 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/05 17:57:49 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdint.h>
-#include <unistd.h>
 #include "ft_printf.h"
 
 ssize_t	ft_putnchar(const char c, size_t length)

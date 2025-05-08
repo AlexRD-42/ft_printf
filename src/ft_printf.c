@@ -6,7 +6,7 @@
 /*   By: adeimlin <adeimlin@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:04:04 by adeimlin          #+#    #+#             */
-/*   Updated: 2025/05/05 17:22:15 by adeimlin         ###   ########.fr       */
+/*   Updated: 2025/05/05 17:26:22 by adeimlin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,16 +143,3 @@ int	ft_printf(const char *str, ...)
 	va_end(args);
 	return (bytes);
 }
-
-// #include <limits.h>
-// #include <stdio.h>
-
-// #define test (">------------<%+.38d>------------<", 0)
-// // #define test ("%#", 799523476)
-// int main()
-// {
-// 	ft_printf test;
-// 	printf("\n");
-// 	printf test;
-// 	printf("\n");
-// }
